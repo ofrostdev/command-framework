@@ -47,7 +47,7 @@ public enum MessageType {
      * the {permission} can be used to send the permission
      */
     NO_PERMISSION("{permission}",
-      "§cRequired permission: §f{permission}§c.") {
+      "§cVocê não possui permissão para isto.") {
         @Override
         public String getDefault(CommandHolder<?, ?> commandHolder) {
             return commandHolder.getPermission();
@@ -58,7 +58,7 @@ public enum MessageType {
      * the {usage} can be used to send the correct usage
      */
     INCORRECT_USAGE("{usage}",
-      "§cCorrect usage: §e/{usage}§c.") {
+      "§cUtilize: /{usage}.") {
         @Override
         public String getDefault(CommandHolder<?, ?> commandHolder) {
             return commandHolder.getUsage();
@@ -69,7 +69,7 @@ public enum MessageType {
      * the {target} can be used to send the correct target
      */
     INCORRECT_TARGET("{target}",
-      "§cYou cannot execute this command. Targeted to: §f{target}§c.") {
+      "§cVocê não pode executar este comando, somente §f{target}§c.") {
         @Override
         public String getDefault(CommandHolder<?, ?> commandHolder) {
             return commandHolder.getCommandInfo().getTarget().name();

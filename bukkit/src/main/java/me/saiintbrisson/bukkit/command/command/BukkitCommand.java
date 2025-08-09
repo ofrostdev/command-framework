@@ -206,39 +206,76 @@ public class BukkitCommand extends Command implements CommandHolder<CommandSende
     @Override
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias,
                                              @NotNull String[] args) throws IllegalArgumentException {
+
         if (!testPermissionSilent(sender)) {
             return Collections.emptyList();
         }
 
-        if (completerExecutor != null) {
-            return completerExecutor.execute(new BukkitContext(
-              alias,
-              sender,
-              BukkitTargetValidator.INSTANCE.fromSender(sender),
-              args,
-              frame,
-              this
-            ));
-        }
+        BukkitChildCommand currentCommand = null;
+        List<BukkitChildCommand> currentChildList = childCommandList;
 
-        if (childCommandList.size() != 0 && args.length != 0) {
-            List<String> matchedChildCommands = new ArrayList<>();
+        for (int i = 0; i < args.length - 1; i++) {
+            String arg = args[i];
+            BukkitChildCommand match = null;
 
-            for (BukkitChildCommand command : childCommandList) {
-                if (StringUtils.startsWithIgnoreCase(command.getName(), args[args.length - 1])
-                  && command.testPermissionSilent(sender)) {
-                    matchedChildCommands.add(command.getName());
+            for (BukkitChildCommand child : currentChildList) {
+                if (child.getName().equalsIgnoreCase(arg) && child.testPermissionSilent(sender)) {
+                    match = child;
+                    break;
                 }
             }
 
-            if (matchedChildCommands.size() != 0) {
+            if (match == null) {
+                currentChildList = null;
+                break;
+            }
+
+            currentCommand = match;
+            currentChildList = match.getChildCommandList();
+        }
+
+        if (currentChildList != null) {
+            String lastArg = args.length > 0 ? args[args.length - 1] : "";
+            List<String> matchedChildCommands = new ArrayList<>();
+
+            for (BukkitChildCommand child : currentChildList) {
+                if (StringUtils.startsWithIgnoreCase(child.getName(), lastArg)
+                        && child.testPermissionSilent(sender)) {
+                    matchedChildCommands.add(child.getName());
+                }
+            }
+
+            if (!matchedChildCommands.isEmpty()) {
                 matchedChildCommands.sort(String.CASE_INSENSITIVE_ORDER);
                 return matchedChildCommands;
             }
         }
 
+        if (currentCommand != null && currentCommand.getCompleterExecutor() != null) {
+            return currentCommand.getCompleterExecutor().execute(new BukkitContext(
+                    alias,
+                    sender,
+                    BukkitTargetValidator.INSTANCE.fromSender(sender),
+                    args,
+                    frame,
+                    currentCommand
+            ));
+        }
+
+        if (completerExecutor != null) {
+            return completerExecutor.execute(new BukkitContext(
+                    alias,
+                    sender,
+                    BukkitTargetValidator.INSTANCE.fromSender(sender),
+                    args,
+                    frame,
+                    this
+            ));
+        }
+
         return super.tabComplete(sender, alias, args);
     }
+
 
     public BukkitCommand createRecursive(String name) {
         int position = getPosition() + StringUtils.countMatches(name, ".");

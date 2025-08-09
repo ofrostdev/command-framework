@@ -117,7 +117,7 @@ public class ArgumentEvaluator<S> {
             if (Context.class.isAssignableFrom(argument.getType())) continue;
 
             builder.append(argument.isNullable() ? " [" : " <");
-            builder.append(StringUtil.uncapitalize(argument.getType().getSimpleName()));
+            builder.append(argument.getName());
 
             if (argument.isArray()) builder.append("...");
 

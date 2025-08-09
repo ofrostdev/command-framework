@@ -117,7 +117,7 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
 
             if (!(throwable instanceof CommandException)) {
                 targetException.printStackTrace();
-                context.sendMessage("§cAn internal error occurred, please contact the staff team.");
+                context.sendMessage("§cHouve um erro interno, contate um staff.");
 
                 return false;
             }
@@ -143,7 +143,7 @@ public class BukkitCommandExecutor implements CommandExecutor<CommandSender> {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            context.sendMessage("§cAn internal error occurred, please contact the staff team.");
+            context.sendMessage("§cHouve um erro interno, contate um staff.");
         }
 
         return false;
