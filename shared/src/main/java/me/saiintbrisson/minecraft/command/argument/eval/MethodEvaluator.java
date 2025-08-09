@@ -26,6 +26,7 @@ import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.exception.CommandException;
 import me.saiintbrisson.minecraft.command.exception.NoSuchConverterException;
 import me.saiintbrisson.minecraft.command.util.ArrayUtil;
+import me.saiintbrisson.minecraft.command.util.StringUtil;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -57,9 +58,14 @@ public class MethodEvaluator {
 
             Class type = parameter.getType();
             boolean isArray = type.isArray();
+            String paramName = parameter.getName();
+
+            if (paramName.startsWith("arg")) {
+                paramName = StringUtil.uncapitalize(type.getSimpleName());
+            }
             final Argument.ArgumentBuilder builder = Argument
               .builder()
-              .name(parameter.getName())
+              .name(paramName)
               .type(type)
               .isArray(isArray)
               .ignoreQuote(parameter.isAnnotationPresent(IgnoreQuote.class));
